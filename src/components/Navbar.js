@@ -1,44 +1,51 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import {
-  Navbar,
-  Nav,
-  NavDropdown,
-  Form,
-  Button,
-  FormControl,
-} from "react-bootstrap";
+import { Link, useHistory } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { Navbar, Nav, NavDropdown, Form, Container } from "react-bootstrap";
 
 export default function NavbarApp() {
+  const user = useSelector((data) => data.user.user);
+  const dispatch = useDispatch(),
+    history = useHistory();
+
+  const handleLogout = () => {
+    dispatch({ type: "LOG_OUT" });
+    history.push("/login");
+  };
   return (
     <Navbar bg="light" expand="lg">
-      <Navbar.Brand href="#home">Compass</Navbar.Brand>
-      <Navbar.Toggle aria-controls="basic-navbar-nav" />
-      <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="mr-auto">
-          <Nav.Link as={Link} to="/">
-            Home
-          </Nav.Link>
-          <Nav.Link as={Link} to="/cart">
-            Cart
-          </Nav.Link>
-          <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-            <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.2">
-              Another action
-            </NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-            <NavDropdown.Divider />
-            <NavDropdown.Item href="#action/3.4">
-              Separated link
-            </NavDropdown.Item>
-          </NavDropdown>
-        </Nav>
-        <Form inline>
-          <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-          <Button variant="outline-success">Search</Button>
-        </Form>
-      </Navbar.Collapse>
+      <Container>
+        <Navbar.Brand href="#home">Compass</Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="mr-auto">
+            <Nav.Link as={Link} to="/">
+              Home
+            </Nav.Link>
+          </Nav>
+          <Form inline>
+            {user.id ? (
+              <>
+                <Nav.Link as={Link} to="/cart">
+                  <i className="fas fa-shopping-cart">{user.cart.length}</i>
+                </Nav.Link>
+                <NavDropdown title={user.email} id="basic-nav-dropdown">
+                  <NavDropdown.Item as={Link} to="/history">
+                    History
+                  </NavDropdown.Item>
+                  <NavDropdown.Item onClick={handleLogout}>
+                    Log out
+                  </NavDropdown.Item>
+                </NavDropdown>
+              </>
+            ) : (
+              <NavDropdown title="User" id="basic-nav-dropdown">
+                <NavDropdown.Item>Log in</NavDropdown.Item>
+              </NavDropdown>
+            )}
+          </Form>
+        </Navbar.Collapse>
+      </Container>
     </Navbar>
   );
 }
